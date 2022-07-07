@@ -1,5 +1,13 @@
 const assert = require('assert');
 
+try {
+    assert.equal(sumDigits(1), 1);
+
+    console.log('PASSED: ' + 'sumDigits(1) should return 1');
+} catch (err) {
+    console.log(err);
+}
+
 function ListNode(val, next) {
     this.val = (val === undefined ? 0 : val)
     this.next = (next === undefined ? null : next)
@@ -13,7 +21,7 @@ function ListNode(val, next) {
 var addTwoNumbers = function (l1, l2) {
     return addTwoNumbersCarry(l1, l2, 0);
 };
-//Missing Carry over -need to fix that
+
 var addTwoNumbersCarry = function (l1, l2, carry) {
     if (l1 || l2) {
         let val1 = l1 ? l1.val : 0;
@@ -29,6 +37,8 @@ var addTwoNumbersCarry = function (l1, l2, carry) {
         }else {
             return new ListNode(Number(String(sum).slice(-1)), addTwoNumbersCarry(l1.next, l2.next, remainder));
         }
+    }else if (carry > 0){
+        return new ListNode(carry, null)
     }
 }
 
