@@ -1,6 +1,4 @@
 const assert = require('assert');
-
-
 /**
  * @param {character[][]} grid
  * @return {number}
@@ -8,40 +6,62 @@ const assert = require('assert');
 // Have to use DFS (Connected Components)
 var numIslands = function(grid) {
     let islands = 0;
-    let visited = new Set();
+    let visited = [...grid]
 
     for (let row = 0; row < grid.length; row++) {
         for (let col = 0; col < grid[row].length; col++) {
-            if (grid[row][col] === "1" && !visited.has({row, col})) { //visited.has is not working correctly
+            if (grid[row][col] === "1" && visited[row][col] !== "X") {
                 islands++;
-                dfs(row,col, visited, grid);
-            }else{
-                visited.add({row,col});
+                bfs(row,col, visited, grid);
             }
+            visited[row][col] = "X";
         }
     }
 
     return islands;
 };
 
-var dfs = function(row, col, visited, grid) {
-    // Check if out of bounds
-    if (row < 0 || col < 0 || row > grid.length - 1 || col > grid[row].length - 1) {
-        return
-    }
+var bfs = function (row, col, visited, grid) {
+    let queue = [];
+    queue.push([row, col])
 
-    if (grid[row][col] === "0" || visited.has(row, col)) {
-        return;
-    }
+    while (queue.length) {
+        let vertex = queue.shift();
+        let rowV = vertex[0];
+        let colV = vertex[1];
 
-    if (grid[row][col] === "1"){
-        visited.add(row, col);
-    }
+        //bottom
+        if (pegChecker( rowV + 1, colV, visited, grid)) {
+            queue.push([rowV + 1,  colV]);
+            visited[rowV + 1][colV] = "X";
+        }
 
-    dfs(row, col - 1, visited, grid)
-    dfs(row, col + 1, visited, grid)
-    dfs(row - 1, col, visited, grid)
-    dfs(row + 1, col, visited, grid)
+        //top
+        if (pegChecker( rowV - 1, colV,visited, grid)) {
+            queue.push([rowV - 1,  colV]);
+            visited[rowV - 1][colV] = "X";
+        }
+
+        //left
+        if (pegChecker( rowV, colV - 1, visited, grid)) {
+            queue.push([rowV,  colV - 1]);
+            visited[rowV][colV - 1] = "X";
+        }
+
+        //right
+        if (pegChecker( rowV, colV + 1, visited, grid)) {
+            queue.push([rowV,  colV + 1]);
+            visited[rowV][colV + 1] = "X";
+        }
+    }
+}
+
+function pegChecker(row,col,visited, grid) {
+    return (isInsideBounds(row, col, grid) && grid[row][col] === "1" && visited[row][col] !== "X" )
+}
+
+function isInsideBounds(row, col, grid) {
+    return (grid.length > row && grid[row] && grid[row].length > col)
 }
 
 try {
